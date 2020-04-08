@@ -1,4 +1,5 @@
 import turtle
+import random
 
 # Available Sprites
 dinosaurs = {
@@ -9,15 +10,19 @@ dinosaurs = {
 # Screen Settings
 screen = turtle.Screen()
 screen.title("Dinosaur Zoo")
-screen.setup(1000, 625)
+screen.setup(1000, 624)
 screen.bgpic("grass.gif")
 screen.addshape(dinosaurs['triceratops'])
 screen.addshape(dinosaurs['stegosaurus'])
 
 # Dinosaur Functions
 def create_dino(dino_type):
-    dino = turtle.Turtle()
-    dino.shape(dinosaurs[dino_type])
+    dino = turtle.Turtle(shape=dinosaurs[dino_type], visible=False)
+    dino.penup()
+    x = random.randint(-500,500)
+    y = random.randint(-312,312)
+    dino.setposition(x,y)
+    dino.showturtle()
     return dino
 
 def move_dino(dino):
