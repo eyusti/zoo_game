@@ -14,13 +14,21 @@ main_screen = turtle.Screen()
 main_screen.title("Dinosaur Zoo")
 main_screen.setup(width, height)
 main_screen.bgpic("grass.gif")
+
 main_screen.addshape(dinosaurs['triceratops'])
+main_screen.addshape('trippy_heart.gif')
 main_screen.addshape(dinosaurs['stegosaurus'])
 main_screen.addshape('steggy_heart.gif')
-main_screen.addshape('trippy_heart.gif')
+main_screen.addshape('egg.gif')
+main_screen.addshape('egg_crack.gif')
+
+clicks = 0
 
 # Game Functions
 def get_dino_clicked(x,y):
+    global clicks 
+    clicks += 1
+    print("click registered")
     lowest_diff = 10000000000
     current_dino = None
     for dino in all_dinos.keys():
@@ -31,6 +39,10 @@ def get_dino_clicked(x,y):
             current_dino = dino
             lowest_diff = diff
     return current_dino
+
+def generate_random_dinosaur():
+    random_dinosaur = random.choice(list(dinosaurs.keys()))
+    return random_dinosaur
 
 def move_handler(x,y):
     dino = get_dino_clicked(x,y)
@@ -46,6 +58,15 @@ def heart_handler(x,y):
         dino.shape("trippy_heart.gif")
         dino.shape("trippy.gif")
     main_screen.delay(0)
+
+def egg_handler():
+    global clicks
+
+    if clicks > 5:
+        egg_appears()
+        clicks = 0
+
+    main_screen.ontimer(egg_handler, 100)
 
 # Dinosaur Functions
 def create_dino(dino_type):
@@ -90,17 +111,26 @@ def move_dino(dino):
 
     main_screen.delay(0)
 
+# Egg Functions
+def egg_appears():
+    egg = turtle.Turtle(shape="egg.gif", visible=False)
+    egg.penup()
+    x = random.randint(-width/2,width/2)
+    y = random.randint(-height/2,height/2)
+    egg.setposition(x,y)
+    egg.showturtle()
+    pass
+
 # Testing execution
-#create_dino('triceratops')
 all_dinos = {}
-one = create_dino('stegosaurus')
-two = create_dino('triceratops')
-all_dinos[one]= 'stegosaurus'
-all_dinos[two]= 'triceratops'
+random_dinosaur = generate_random_dinosaur()
+all_dinos[create_dino(random_dinosaur)] = random_dinosaur
 
 for dino in all_dinos.keys():
     dino.onclick(move_handler,1)
     dino.onclick(heart_handler,2)
+
+main_screen.ontimer(egg_handler,100)
 
 turtle.listen()
 turtle.mainloop()
