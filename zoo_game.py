@@ -22,27 +22,12 @@ main_screen.addshape('steggy_heart.gif')
 main_screen.addshape('egg.gif')
 main_screen.addshape('egg_crack.gif')
 
-clicks = 0
+# Globals
+clicks = 0 # get_dino_clicked
+all_dinos = {} # egg_hatches
+all_eggs = [] # egg_appears
 
 # Game Functions
-def get_dino_clicked(x,y):
-    global clicks 
-    clicks += 1
-    print("click registered")
-    lowest_diff = 10000000000
-    current_dino = None
-    for dino in all_dinos.keys():
-        diff = 0
-        diff += abs(x-dino.xcor())
-        diff += abs(y-dino.ycor())
-        if diff < lowest_diff:
-            current_dino = dino
-            lowest_diff = diff
-    return current_dino
-
-def generate_random_dinosaur():
-    random_dinosaur = random.choice(list(dinosaurs.keys()))
-    return random_dinosaur
 
 def move_handler(x,y):
     dino = get_dino_clicked(x,y)
@@ -67,6 +52,16 @@ def egg_handler():
         clicks = 0
 
     main_screen.ontimer(egg_handler, 100)
+
+def hatch_handler():
+    if all_eggs:
+        egg_hatches()
+    main_screen.ontimer(hatch_handler,60000)
+
+def refresh_onclick_settings():
+    for dino in all_dinos.keys():
+        dino.onclick(move_handler,1)
+        dino.onclick(heart_handler,2)
 
 # Dinosaur Functions
 def create_dino(dino_type):
@@ -111,26 +106,53 @@ def move_dino(dino):
 
     main_screen.delay(0)
 
+def get_dino_clicked(x,y):
+    global clicks 
+    clicks += 1
+    lowest_diff = 10000000000
+    current_dino = None
+    for dino in all_dinos.keys():
+        diff = 0
+        diff += abs(x-dino.xcor())
+        diff += abs(y-dino.ycor())
+        if diff < lowest_diff:
+            current_dino = dino
+            lowest_diff = diff
+    return current_dino
+
+def generate_random_dinosaur():
+    random_dinosaur = random.choice(list(dinosaurs.keys()))
+    return random_dinosaur
+
 # Egg Functions
 def egg_appears():
+    global all_eggs
     egg = turtle.Turtle(shape="egg.gif", visible=False)
+    all_eggs.append(egg)
     egg.penup()
     x = random.randint(-width/2,width/2)
     y = random.randint(-height/2,height/2)
     egg.setposition(x,y)
     egg.showturtle()
-    pass
 
-# Testing execution
-all_dinos = {}
-random_dinosaur = generate_random_dinosaur()
-all_dinos[create_dino(random_dinosaur)] = random_dinosaur
+def egg_hatches():
+    global all_dinos
 
-for dino in all_dinos.keys():
-    dino.onclick(move_handler,1)
-    dino.onclick(heart_handler,2)
+    main_screen.delay(500)
+    hatching_egg = all_eggs.pop()
+    hatching_egg.shape("egg_crack.gif")
+    random_dinosaur = generate_random_dinosaur()
+    hatching_egg.shape(dinosaurs[random_dinosaur])
+    all_dinos[hatching_egg] = random_dinosaur
+    refresh_onclick_settings()
 
+# Game Execution
+starter_dinosaur = generate_random_dinosaur()
+all_dinos[create_dino(starter_dinosaur)] = starter_dinosaur
+
+refresh_onclick_settings()
 main_screen.ontimer(egg_handler,100)
+main_screen.ontimer(hatch_handler,60000)
 
 turtle.listen()
 turtle.mainloop()
