@@ -7,15 +7,45 @@ dinosaurs = {
     "stegosaurus": "steggy.gif",
 }
 
-# Screen Settings
+# Main Screen Settings
 width = 1000
 height = 624
-screen = turtle.Screen()
-screen.title("Dinosaur Zoo")
-screen.setup(width, height)
-screen.bgpic("grass.gif")
-screen.addshape(dinosaurs['triceratops'])
-screen.addshape(dinosaurs['stegosaurus'])
+main_screen = turtle.Screen()
+main_screen.title("Dinosaur Zoo")
+main_screen.setup(width, height)
+main_screen.bgpic("grass.gif")
+main_screen.addshape(dinosaurs['triceratops'])
+main_screen.addshape(dinosaurs['stegosaurus'])
+main_screen.addshape('steggy_heart.gif')
+main_screen.addshape('trippy_heart.gif')
+
+# Game Functions
+def get_dino_clicked(x,y):
+    lowest_diff = 10000000000
+    current_dino = None
+    for dino in all_dinos.keys():
+        diff = 0
+        diff += abs(x-dino.xcor())
+        diff += abs(y-dino.ycor())
+        if diff < lowest_diff:
+            current_dino = dino
+            lowest_diff = diff
+    return current_dino
+
+def move_handler(x,y):
+    dino = get_dino_clicked(x,y)
+    move_dino(dino)
+
+def heart_handler(x,y):
+    dino = get_dino_clicked(x,y)
+    main_screen.delay(500)
+    if all_dinos[dino] == 'stegosaurus':
+        dino.shape("steggy_heart.gif")
+        dino.shape("steggy.gif")
+    if all_dinos[dino] == 'triceratops':
+        dino.shape("trippy_heart.gif")
+        dino.shape("trippy.gif")
+    main_screen.delay(0)
 
 # Dinosaur Functions
 def create_dino(dino_type):
@@ -29,9 +59,10 @@ def create_dino(dino_type):
 
 def move_dino(dino):
     dino.penup()
-    dino.speed("slowest")
     movement = random.randint(0,4)
     distance = random.randint(200,400)
+    #dino.speed("slowest")
+    main_screen.delay(500)
     if movement == 0:
         if dino.xcor() + distance < width/2:
             dino.forward(distance)
@@ -57,14 +88,19 @@ def move_dino(dino):
         y = random.randint(-height/2,height/2)
         dino.goto(x,y)
 
-# Testing execution
-def main():
-    dino_1 = create_dino('triceratops')
-    dino_2 = create_dino('stegosaurus')
-    #screen.delay(750)
-    while True:
-        move_dino(dino_1)
-        move_dino(dino_2)
+    main_screen.delay(0)
 
-if __name__ == "__main__":
-    main()
+# Testing execution
+#create_dino('triceratops')
+all_dinos = {}
+one = create_dino('stegosaurus')
+two = create_dino('triceratops')
+all_dinos[one]= 'stegosaurus'
+all_dinos[two]= 'triceratops'
+
+for dino in all_dinos.keys():
+    dino.onclick(move_handler,1)
+    dino.onclick(heart_handler,2)
+
+turtle.listen()
+turtle.mainloop()
