@@ -1,5 +1,7 @@
 import turtle
 import random
+import tkinter as tk
+from PIL import ImageTk,Image
 
 # Available Sprites
 dinosaurs = {
@@ -21,6 +23,19 @@ main_screen.addshape(dinosaurs['stegosaurus'])
 main_screen.addshape('steggy_heart.gif')
 main_screen.addshape('egg.gif')
 main_screen.addshape('egg_crack.gif')
+
+# Drawing Window
+def open_drawing_window():
+    drawing_width = 50
+    drawing_height = 30
+    drawing_screen = turtle.Screen()
+    drawing_screen.title("Color Your Dino <3")
+    drawing_screen.setup(width, height)
+    drawing_screen.bgpic("steggy.gif")
+    #make dinos invisible
+
+#def close_drawing_window():
+
 
 # Globals
 clicks = 0 # get_dino_clicked
@@ -127,6 +142,7 @@ def generate_random_dinosaur():
 # Egg Functions
 def egg_appears():
     global all_eggs
+
     egg = turtle.Turtle(shape="egg.gif", visible=False)
     all_eggs.append(egg)
     egg.penup()
@@ -153,6 +169,22 @@ all_dinos[create_dino(starter_dinosaur)] = starter_dinosaur
 refresh_onclick_settings()
 main_screen.ontimer(egg_handler,100)
 main_screen.ontimer(hatch_handler,60000)
+
+window = tk.Tk()
+canvas = tk.Canvas(master = window, width = 500, height = 500)
+#background_image = ImageTk.PhotoImage(Image.open("steggy.gif"))
+#label = tk.Label(image=background_image)
+#label.pack()
+canvas.pack()
+cursor = turtle.RawTurtle(canvas)
+cursor.speed(-1)
+
+def drag(x,y):
+    cursor.ondrag(None)
+    cursor.setheading(cursor.towards(x,y))
+    cursor.goto(x,y)
+    cursor.ondrag(drag)
+cursor.ondrag(drag)
 
 turtle.listen()
 turtle.mainloop()
