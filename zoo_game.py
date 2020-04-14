@@ -3,6 +3,11 @@ import random
 import tkinter as tk
 from PIL import ImageTk,Image
 
+# Globals
+clicks = 0 # get_dino_clicked
+all_dinos = {} # egg_hatches
+all_eggs = [] # egg_appears
+
 # Available Sprites
 dinosaurs = {
     "triceratops": "trippy.gif",
@@ -23,24 +28,6 @@ main_screen.addshape(dinosaurs['stegosaurus'])
 main_screen.addshape('steggy_heart.gif')
 main_screen.addshape('egg.gif')
 main_screen.addshape('egg_crack.gif')
-
-# Drawing Window
-def open_drawing_window():
-    drawing_width = 50
-    drawing_height = 30
-    drawing_screen = turtle.Screen()
-    drawing_screen.title("Color Your Dino <3")
-    drawing_screen.setup(width, height)
-    drawing_screen.bgpic("steggy.gif")
-    #make dinos invisible
-
-#def close_drawing_window():
-
-
-# Globals
-clicks = 0 # get_dino_clicked
-all_dinos = {} # egg_hatches
-all_eggs = [] # egg_appears
 
 # Game Functions
 
@@ -165,26 +152,71 @@ def egg_hatches():
 # Game Execution
 starter_dinosaur = generate_random_dinosaur()
 all_dinos[create_dino(starter_dinosaur)] = starter_dinosaur
-
 refresh_onclick_settings()
 main_screen.ontimer(egg_handler,100)
 main_screen.ontimer(hatch_handler,60000)
 
+# Needs to get moved into method
+lastx, lasty = 0, 0
+color = "black"
+
+def setColor(newcolor):
+    global color
+    color = newcolor
+
+def xy(event):
+    global lastx, lasty
+    lastx, lasty = event.x, event.y
+
+def addLine(event):
+    global lastx, lasty
+    canvas.create_line((lastx, lasty, event.x, event.y), fill=color)
+    lastx, lasty = event.x, event.y
+
 window = tk.Tk()
+window.columnconfigure(0, weight=1)
+window.rowconfigure(0, weight=1)
+
 canvas = tk.Canvas(master = window, width = 500, height = 500)
-#background_image = ImageTk.PhotoImage(Image.open("steggy.gif"))
-#label = tk.Label(image=background_image)
-#label.pack()
-canvas.pack()
+canvas.grid(column=0, row=0, sticky=("n", "w", "e", "s"))
+canvas.bind("<Button-1>", xy)
+canvas.bind("<B1-Motion>", addLine)
+
+background_image = tk.PhotoImage(master = window, file = "crack.gif", name = "egg_test")
+background_dino = tk.Label(master = window, image = background_image)
+background_dino.place(relx=0.5, rely=0.5, anchor="center")
+background_dino.image = background_image
+
+id = canvas.create_rectangle((10, 10, 30, 30), fill="red")
+canvas.tag_bind(id, "<Button-1>", lambda x: setColor("red"))
+id = canvas.create_rectangle((10, 35, 30, 55), fill="yellow")
+canvas.tag_bind(id, "<Button-1>", lambda x: setColor("yellow"))
+id = canvas.create_rectangle((10, 60, 30, 80), fill="green")
+canvas.tag_bind(id, "<Button-1>", lambda x: setColor("green"))
+id = canvas.create_rectangle((10, 85, 30, 105), fill="blue")
+canvas.tag_bind(id, "<Button-1>", lambda x: setColor("blue"))
+id = canvas.create_rectangle((10, 110, 30, 130), fill="magenta")
+canvas.tag_bind(id, "<Button-1>", lambda x: setColor("magenta"))
+id = canvas.create_rectangle((10, 135, 30, 155), fill="white")
+canvas.tag_bind(id, "<Button-1>", lambda x: setColor("white"))
+id = canvas.create_rectangle((10, 160, 30, 180), fill="black")
+canvas.tag_bind(id, "<Button-1>", lambda x: setColor("black"))	
+
+'''
+TURTLE VERSION PROBABLY DELETE
 cursor = turtle.RawTurtle(canvas)
 cursor.speed(-1)
+canvas.pack()
 
 def drag(x,y):
     cursor.ondrag(None)
     cursor.setheading(cursor.towards(x,y))
     cursor.goto(x,y)
     cursor.ondrag(drag)
+
 cursor.ondrag(drag)
+'''
+# END MOVE TO METHOD
 
 turtle.listen()
 turtle.mainloop()
