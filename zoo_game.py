@@ -182,10 +182,13 @@ canvas.grid(column=0, row=0, sticky=("n", "w", "e", "s"))
 canvas.bind("<Button-1>", xy)
 canvas.bind("<B1-Motion>", addLine)
 
-background_image = tk.PhotoImage(master = window, file = "crack.gif", name = "egg_test")
-background_dino = tk.Label(master = window, image = background_image)
-background_dino.place(relx=0.5, rely=0.5, anchor="center")
-background_dino.image = background_image
+background_image = tk.PhotoImage(master = canvas, file = "crack.gif", name = "egg_test")
+background_dino = canvas.create_image(250, 250, image = background_image, anchor = "center")
+#background_dino = tk.Label(master = canvas, image = background_image)
+#background_dino.place(relx=0.5, rely=0.5, anchor="center")
+#background_dino.image = background_image
+canvas.tag_lower(background_dino)
+
 
 id = canvas.create_rectangle((10, 10, 30, 30), fill="red")
 canvas.tag_bind(id, "<Button-1>", lambda x: setColor("red"))
@@ -201,6 +204,7 @@ id = canvas.create_rectangle((10, 135, 30, 155), fill="white")
 canvas.tag_bind(id, "<Button-1>", lambda x: setColor("white"))
 id = canvas.create_rectangle((10, 160, 30, 180), fill="black")
 canvas.tag_bind(id, "<Button-1>", lambda x: setColor("black"))	
+
 
 '''
 TURTLE VERSION PROBABLY DELETE
